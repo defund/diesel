@@ -1,0 +1,16 @@
+{
+  "manifest_version": 2,
+  "name": "Diesel",
+  "author": "defund",
+  "version": "1.0.0",
+  "content_scripts": [
+    {
+      "matches": ["https://discord.com/*", "https://discordapp.com/*"],
+      "run_at": "document_start",
+      "js": ["inject.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    "diesel.js"
+  ]
+}
