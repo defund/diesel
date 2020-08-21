@@ -7,33 +7,38 @@ window.onload = () => {
 	const encodeRegex = /<(a?:\w+:)(\d+)>/g
 	const decodeRegex = /<(a?:\w+:)(\d+)#diesel>/g
 
+	const channelModule = getModuleWithMethod('getChannel')
+	const customEmojiModule = getModuleWithMethod('getCustomEmojiById')
 	const dispatchModule = getModuleWithMethod('dispatch')
+	const emojiModule = getModuleWithMethod('isEmojiDisabled')
 	const messageModule = getModuleWithMethod('sendMessage')
+	const userModule = getModuleWithMethod('getCurrentUser')
 
 	const dispatch = dispatchModule.dispatch
 	const sendMessage = messageModule.sendMessage
+	const getCurrentUser = userModule.getCurrentUser
 
-	const encodeMessage = (message) => {
-		if (typeof message?.content == 'string' &&
-			message?.invalidEmojis instanceof Array) {
-			const ids = message.invalidEmojis.map((emoji) => emoji.id)
-			message.invalidEmojis.length = 0
-			message.content = message.content
-				.replace(encodeRegex, (match, name, id) => {
-					if (ids.includes(id)) {
-						return `<${name}${id}${banner}>`
-					}
-					return match
-				})
+	var dieselToggle = false;
+	var dieselUser;
+
+	userModule.__proto__.getCurrentUser = function() {
+		const user = getCurrentUser.apply(this, arguments)
+		if (dieselToggle) {
+			dieselToggle = false;
+			return user;
 		}
+		if (!dieselUser) {
+			dieselUser = Object.create(Object.getPrototypeOf(user))
+		}
+		Object.assign(dieselUser, user)
+		dieselUser.premiumType = 2
+		return dieselUser
 	}
 
 	const decodeMessage = (message) => {
 		if (typeof message?.content == 'string') {
-			console.log('[b]', message.content)
 			message.content = message.content
 				.replace(decodeRegex, (_, name, id) => `<${name}${id}>`)
-			console.log('[q]', message.content)
 		}
 	}
 
@@ -59,8 +64,16 @@ window.onload = () => {
 
 	messageModule.sendMessage = function() {
 		const message = arguments[1]
-		encodeMessage(message)
-		console.log('[+]', message)
+		if (typeof message?.content == 'string') {
+			const channel = channelModule.getChannel(arguments[0])
+			message.content = message.content
+				.replace(encodeRegex, (match, name, id) => {
+					dieselToggle = true
+					const emoji = customEmojiModule.getCustomEmojiById(id)
+					return emojiModule.isEmojiDisabled(emoji, channel) ?
+						`<${name}${id}${banner}>` : match
+				})
+		}
 		return sendMessage.apply(this, arguments)
 	}
 }
