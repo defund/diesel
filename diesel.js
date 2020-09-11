@@ -4,9 +4,9 @@ const getModuleWithMethod = (method) => webpackJsonp
 	.exports.default
 
 window.onload = () => {
-	const flag = '#<https://github.com/defund/diesel>'
+	const flag = '[<https://github.com/defund/diesel>]'
 	const encodeRegex = /<(a?:\w+:)(\d+)>/g
-	const decodeRegex = /<(a?:\w+:)(\d+)#<https:\/\/github\.com\/defund\/diesel>>/g
+	const decodeRegex = /<(a?:\w+:)(\d+)\[<https:\/\/github\.com\/defund\/diesel>\]>/g
 
 	var dieselUser
 	var dieselNozzle = true

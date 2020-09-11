@@ -36,12 +36,10 @@ In your terminal, navigate to the directory that contains the file `app.asar`. M
 * Windows: Who uses this???
 * Linux: Varies across builds, figure it out yourself
 
-We're going to unpack `app.asar` into a directory named `asar`.
+We're going to unpack `app.asar` into a directory named `app`.
 ```
 asar extract app.asar app
 ```
-
-Make sure to delete `app.asar` or rename it as a backup. **Do not keep the file unchanged.**
 
 Finally, we're going to slightly modify the source code. There should be a directory in `app` named `app_bootstrap`. Drop the `diesel` folder you downloaded into here. There should also be a file named `index.js`. Open it in a text editor, and prepend the following lines of code:
 
